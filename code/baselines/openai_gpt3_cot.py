@@ -103,7 +103,6 @@ def completions_with_backoff(**kwargs):
 outputs = {"answer_gpt3" : {}, "cot_gpt3" : {}}
 
 for i in tqdm(range(len(use_keys))):
-    print(i)
     question = questions[use_keys[i]]
     response = completions_with_backoff(
         model="text-davinci-003",
@@ -115,13 +114,17 @@ for i in tqdm(range(len(use_keys))):
 
     text_out = response["choices"][0]["text"]
     # print(text_out)
-    answer_split = text_out.split("\nAnswer: ")
-    answer = answer_split[1].strip()
-    step_split = answer_split[0].split("\n")
-    steps = list(map(lambda x: x.split(":")[-1].strip(), step_split))
-    # print(steps)
-    # print(answer)
     
+    try:
+        answer_split = text_out.split("\nAnswer: ")
+        answer = answer_split[1].strip()
+        step_split = answer_split[0].split("\n")
+        steps = list(map(lambda x: x.split(":")[-1].strip(), step_split))
+        # print(steps)
+        # print(answer)
+    except Exception:
+        answer = "FAIL"
+        steps = []
     outputs["answer_gpt3"][use_keys[i]] = answer
     outputs["cot_gpt3"][use_keys[i]] = steps
 
